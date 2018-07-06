@@ -182,8 +182,6 @@ add_action('graphql_links_fields', function($fields) {
         $linksType = new ObjectType([
         'name' => 'Links',
         'description' => __( 'The description of your process type', 'your-textdomain' ),
-        'fields' => [
-             'project__Label' => [
         'fields' => [  // define your fields
              'linkUrl' => [
                               'type' => \WPGraphQL\Types::string(),
