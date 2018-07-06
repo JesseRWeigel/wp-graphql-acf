@@ -169,12 +169,21 @@ function init() {
 
 add_action( 'graphql_init', '\WPGraphQL\Extensions\init' );
 
+
+
+//make sure to use ObjectType
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
+
+// links repeater
+
 add_action('graphql_links_fields', function($fields) {
-// create a new type representing each row in a repeater
+
         $linksType = new ObjectType([
-        'name' => 'Link',
-// description for graphql docs
-        'description' => __( 'One link row', 'your-textdomain' ), 
+        'name' => 'Links',
+        'description' => __( 'The description of your process type', 'your-textdomain' ),
+        'fields' => [
+             'project__Label' => [
         'fields' => [  // define your fields
              'linkUrl' => [
                               'type' => \WPGraphQL\Types::string(),
@@ -182,16 +191,14 @@ add_action('graphql_links_fields', function($fields) {
              'linkName' => [
                               'type' => \WPGraphQL\Types::string(),
                         ],
-	     ]
+        ]
         ]);
-// define the field containing your repeater
-        $fields[ 'links' ] = [ 
-// return a list, because repeaters are lists :p
-        'type' => Type::listOf($linksType), 
-        'description' => __( 'Links field in GraphQL', 'your-textdomain' ),
+        $fields[ 'links' ] = [
+        'type' => Type::listOf($linksType),
+        'description' => __( 'Your processes repeater field in GraphQL', 'your-textdomain' ),
         'resolve' => function( \WP_Post $post ) {
-            $link = get_field( 'links', $post->ID );
-            return ! empty( $link ) ? $link : null;
+            $fp_metabox_process_group = get_post_meta( $post->ID, 'fp_metabox_process_group', true );
+            return ! empty( $fp_metabox_process_group ) ? $fp_metabox_process_group : null;
         },
         ];
         return $fields;
