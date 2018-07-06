@@ -168,3 +168,31 @@ function init() {
 }
 
 add_action( 'graphql_init', '\WPGraphQL\Extensions\init' );
+
+add_action('graphql_links_fields', function($fields) {
+// create a new type representing each row in a repeater
+        $linksType = new ObjectType([
+        'name' => 'Link',
+// description for graphql docs
+        'description' => __( 'One link row', 'your-textdomain' ), 
+        'fields' => [  // define your fields
+             'linkUrl' => [
+                              'type' => \WPGraphQL\Types::string(),
+                        ],
+             'linkName' => [
+                              'type' => \WPGraphQL\Types::string(),
+                        ],
+	     ]
+        ]);
+// define the field containing your repeater
+        $fields[ 'links' ] = [ 
+// return a list, because repeaters are lists :p
+        'type' => Type::listOf($linksType), 
+        'description' => __( 'Links field in GraphQL', 'your-textdomain' ),
+        'resolve' => function( \WP_Post $post ) {
+            $link = get_field( 'links', $post->ID );
+            return ! empty( $link ) ? $link : null;
+        },
+        ];
+        return $fields;
+},99 );
